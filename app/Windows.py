@@ -919,14 +919,15 @@ class RecipeEditor(QWidget):
         self.rec_mapper.setModel(self.rec_model)
 
         self.table = QTableView()
+        # self.table.setSortingEnabled(True)
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.table.verticalHeader().hide()
         self.table.setModel(self.rec_proxy_model)
         self.table.resizeColumnsToContents()
         self.table.clicked.connect(self.updateSelection)
+        self.table.horizontalHeader().sectionClicked.connect(self.sortTable)
         self.selectRow(0)
-        # self.setSortingEnabled(True)
         
         # self.table = Views.RecView(self.rec_mapper)
         # self.table.setModel(self.rec_model)
@@ -960,6 +961,11 @@ class RecipeEditor(QWidget):
         layout.addWidget(button_box)
 
         self.setLayout(layout)
+
+    def sortTable(self, section):
+        new_section = self.rec_proxy_model.to_source_sorting[section]
+        self.table.sortByColumn(new_section, Qt.SortOrder.AscendingOrder)
+        self.rec_proxy_model.layoutChanged.emit()
 
     def updateSelection(self, selectedIndex: QModelIndex):
         self.selectRow(selectedIndex.row())
