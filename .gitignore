@@ -12,3 +12,4 @@ config_temp.txt
 .python-version
 pyvenv.cfg 
 credentials.txt 
+sql/installer_v14.ifp

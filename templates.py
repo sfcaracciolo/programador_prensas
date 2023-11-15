@@ -1,6 +1,11 @@
 
 from jinja2 import Environment, FileSystemLoader
 import sys 
+import random 
+import string
+
+def serial_generator(chars=string.ascii_uppercase + string.digits):
+    return '-'.join([''.join(random.choice(chars) for _ in range(5)) for _ in range(4)])
 
 DEV = (len(sys.argv) == 2) and (sys.argv[1] == '--dev')
 
@@ -30,3 +35,16 @@ content = template.render(
 )
 with open('sql/import_old_recipes.sql', mode="w", encoding="utf-8") as f:
     f.write(content)
+
+# INSTALLFORGE
+if DEV:
+    template = environment.get_template("installer_v14.jinja")
+    content = template.render(
+        VERSION='0.0.0.2',
+        DEPLOY_PATH='E:\Repositorios\produccion_alergom\deploy',
+        INSTALLFORGE_PATH='C:\Program Files (x86)\solicus\InstallForge',
+        SERIAL=serial_generator()
+    )
+    with open('sql/installer_v14.ifp', mode="w", encoding="utf-8") as f:
+        f.write(content)
+
