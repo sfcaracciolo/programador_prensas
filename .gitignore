@@ -13,3 +13,5 @@ config_temp.txt
 pyvenv.cfg 
 credentials.txt 
 sql/installer_v14.ifp
+hmi/
+deploy/setup.exe

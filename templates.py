@@ -41,7 +41,7 @@ if DEV:
     template = environment.get_template("installer_v14.jinja")
     content = template.render(
         VERSION='0.0.0.2',
-        DEPLOY_PATH='E:\Repositorios\produccion_alergom\deploy',
+        DEPLOY_PATH='E:\Repositorios\programador_prensas\deploy',
         INSTALLFORGE_PATH='C:\Program Files (x86)\solicus\InstallForge',
         SERIAL=serial_generator()
     )
