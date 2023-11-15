@@ -14,11 +14,13 @@
 # Deploy
 
 1. En carpeta /deploy: `nuitka ..\app\main.py`
-2. Abrir installforge 1.4.2.21, cargar `deploy\installer_v14.ifp` y tocar el botón Build.
+2. Abrir installforge 1.4.2.21, cargar `sql\installer_v14.ifp` y tocar el botón Build.
+
+Ver en sección SQL que en modo --dev también se genera `installer_v14.ifp` con Jinja.
 
 # SQL
 
-Para crear los esquemas de la base de datos según sea producción o dev, se ejecuta `python templates.py` con el flag `--dev` si corresponde. Los archivos *.sql se generan en `\sql`.
+Para crear los esquemas de la base de datos según sea producción o dev, se ejecuta `python templates.py` con el flag `--dev` si corresponde. Los archivos *.sql se generan en `\sql`. 
 
 ## Base de datos
 
