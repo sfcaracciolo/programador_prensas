@@ -1,0 +1,14 @@
+dbfs/
+Scripts/
+Lib/
+__pycache__/
+Include/
+main.build/
+main.dist/
+serial.txt
+SP-Hojas.csv
+app.log
+config_temp.txt
+.python-version
+pyvenv.cfg 
+credentials.txt 
