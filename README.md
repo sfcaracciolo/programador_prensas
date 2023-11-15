@@ -20,12 +20,15 @@ Con Jinja armar template del *.ifp y *.sql para distintos ambientes (DEV, PROD)
 
 # SQL
 
+Para crear los esquemas de la base de datos según sea producción o dev, se ejecuta `python templates.py` con el flag `--dev` si corresponde. Los archivos *.sql se generan en `\sql`.
+
 ## Base de datos
 
 Las tablas definidas son:
 * `cliente`, `hoja_de_ruta`, `operario` y `orden_produccion_item` son vistas de los *.dbf del servidor.
 * `orden_programada`: son las órdenes de producción programadas, c/u corresponde a un elemento de `orden_programada_item` y tiene hijos según la cantidad de jornales que dure la orden (padre de `tarea_programada`).
-* `tarea_programada`: son las tareas que componen cada orden programada (hijo de `orden_programada`). c/u tiene guardado, acumulado y total por cada variable.  
+* `tarea_programada`: son las tareas que componen cada orden programada (hijo de `orden_programada`). c/u tiene guardado, acumulado y total por cada variable.
+* `receta`: contiene 16 variables.
   
 ## Backup/Restore
 
