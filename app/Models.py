@@ -190,8 +190,9 @@ class RecProxyModel(QAbstractProxyModel):
         if self.is_root_index(source_index):
             return None
         
-        if role == Qt.TextAlignmentRole:
-            return int(Qt.AlignCenter)
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignCenter
+        
         return super().data(index, role)
     
 class OpModel(QSqlRelationalTableModel):
