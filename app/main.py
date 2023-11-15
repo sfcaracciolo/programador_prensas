@@ -79,7 +79,7 @@ class OpcClientWorker(QObject):
     @Slot(str)
     def set_machine_offline(self, machine):
         nodes = [
-            self.uaclient.get_node(f'ns=2;s=MODBUS RTU.Tags.Estados.{machine}'), # set offline status
+            self.uaclient.get_node(f'ns=2;s=Local HMI.Tags.Estados.{machine}'), # set offline status
         ]
         values = [
             ua.DataValue(ua.Variant(0, ua.VariantType.UInt16))
@@ -87,16 +87,18 @@ class OpcClientWorker(QObject):
         self.write_values(nodes, values)
         
     @Slot(str, list)
-    def set_machine_online(self, machine, recipe_values):
+    def set_machine_online(self, machine, recipe_values, hr):
         nodes = [
             self.uaclient.get_node(f'ns=2;s=MODBUS RTU.Tags.Recetas.{machine}'), # load recipe
             self.uaclient.get_node(f'ns=2;s=MODBUS RTU.Tags.Variables.{machine}'), # reset counters
-            self.uaclient.get_node(f'ns=2;s=MODBUS RTU.Tags.Estados.{machine}'), # set online status
+            self.uaclient.get_node(f'ns=2;s=Local HMI.Tags.Estados.{machine}'), # set online status
+            self.uaclient.get_node(f'ns=2;s=Local HMI.Tags.Hojas de ruta.{machine}'), # set hr
         ]
         values = [
             ua.DataValue(ua.Variant(recipe_values, ua.VariantType.UInt16)),
             ua.DataValue(ua.Variant(Constants.VARIABLES_SIZE*[0], ua.VariantType.UInt16)),
-            ua.DataValue(ua.Variant(1, ua.VariantType.UInt16))
+            ua.DataValue(ua.Variant(1, ua.VariantType.UInt16)),
+            ua.DataValue(ua.Variant(hr, ua.VariantType.String)),
         ]
         self.write_values(nodes, values)
 
@@ -206,7 +208,7 @@ class OpcServerWorker(QObject):
 
 class MainWindow(QMainWindow):
     update_iop_status_color = Signal(object)
-    set_machine_online = Signal(str, list)
+    set_machine_online = Signal(str, list, str)
     set_machine_offline = Signal(str)
 
     def __init__(self, *args, **kwargs):
@@ -999,7 +1001,8 @@ class MainWindow(QMainWindow):
         if machine[:3] == 'PRE':
             if new_status == 1:
                     recipe_values = self.get_recipe(tp_index)
-                    self.set_machine_online.emit(machine, recipe_values)
+                    hr = tp_index.siblingAtColumn(self.tp_model.fieldIndex('hr')).data(Qt.ItemDataRole.DisplayRole)
+                    self.set_machine_online.emit(machine, recipe_values, hr)
             elif status == 1: # (new_status in (0, 2))
                 self.set_machine_offline.emit(machine)
 
