@@ -55,3 +55,7 @@ Al poner una tarea en marcha se envía la receta correspondiente a la máquina, 
 | 2 (finished) | - | A- | X |
 
 **X**: sin acción. **A**: Si máquina online -> checkout de la TP activa. Luego, activar TP nueva. **B**: Checkout de la TP activa. Luego, desactivar TP. **+/-**: Incrementar/Decrementar hijos finalizados. Checkout es la operación que incrementa los acumulados de las tareas programadas.
+
+## Ventana ppal
+
+<img src="screenshots/mainwindow.png" alt="drawing" width=""/>
