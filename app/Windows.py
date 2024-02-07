@@ -1182,7 +1182,7 @@ class BackUpWindow(QWidget):
         return super().show()
 
     def get_values(self):
-        self.w_target_dir.setText(settings.value('PC/DB/backup', defaultValue="E:/backup_test"))
+        self.w_target_dir.setText(settings.value('PC/DB/backup', defaultValue="C:/"))
 
     def message(self, s):
         self.w_plain_text.appendPlainText(s)

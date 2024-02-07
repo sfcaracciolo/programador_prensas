@@ -1,4 +1,4 @@
-import logging
+# import logging
 
 from PySide6.QtCore import QSettings
 
@@ -8,7 +8,7 @@ from asyncua import crypto
 from asyncua.tools import endpoint_to_strings
 
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 class UaClient(object):
@@ -46,11 +46,11 @@ class UaClient(object):
     def get_endpoints(uri):
         client = Client(uri, timeout=2)
         edps = client.connect_and_get_server_endpoints()
-        for i, ep in enumerate(edps, start=1):
-            logger.info('Endpoint %s:', i)
-            for (n, v) in endpoint_to_strings(ep):
-                logger.info('  %s: %s', n, v)
-            logger.info('')
+        # for i, ep in enumerate(edps, start=1):
+            # logger.info('Endpoint %s:', i)
+            # for (n, v) in endpoint_to_strings(ep):
+                # logger.info('  %s: %s', n, v)
+            # logger.info('')
         return edps
 
     def load_security_settings(self, uri):
@@ -102,7 +102,7 @@ class UaClient(object):
 
     def connect(self, uri):
         self.disconnect()
-        logger.info("Connecting to %s with parameters %s, %s, %s, %s", uri, self.security_mode, self.security_policy, self.user_certificate_path, self.user_private_key_path)
+        # logger.info("Connecting to %s with parameters %s, %s, %s, %s", uri, self.security_mode, self.security_policy, self.user_certificate_path, self.user_private_key_path)
         self.client = Client(uri)
         self.client.application_uri = self.application_uri
         self.client.description = "FreeOpcUa Client GUI"
@@ -128,7 +128,8 @@ class UaClient(object):
             self.client.load_enums()
             self.client.load_type_definitions()
         except Exception:
-            logger.exception("Loading custom stuff with spec <= 1.03 did not work")
+            pass
+            # logger.exception("Loading custom stuff with spec <= 1.03 did not work")
         self.save_security_settings(uri)
 
     def disconnect(self):

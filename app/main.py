@@ -16,15 +16,15 @@
 # -*- coding: utf-8 -*-
 
 from asyncio import exceptions
-import logging
+# import logging
 import sys
 from datetime import datetime
 
-logging.basicConfig(filename='app.log',
-                    filemode='a',
-                    format='%(asctime)s - %(message)s',
-                    datefmt='%d-%b-%y %H:%M:%S',
-                    level=logging.INFO)
+# logging.basicConfig(filename='app.log',
+#                     filemode='a',
+#                     format='%(asctime)s - %(message)s',
+#                     datefmt='%d-%b-%y %H:%M:%S',
+#                     level=logging.INFO)
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
@@ -1127,7 +1127,7 @@ class MainWindow(QMainWindow):
         machine = node.read_display_name().Text
 
         if values is None:
-            logging.warning(f'COM error between HMI and machine {machine}')
+            # logging.warning(f'COM error between HMI and machine {machine}')
             return
         # print(machine, values)
         self.opc_model.set_vars(machine, list(map(int, values)))
@@ -1150,7 +1150,7 @@ if __name__ == "__main__":
     splash = QSplashScreen(pixmap)
     splash.show()
 
-    logging.info('INICIO app.')
+    # logging.info('INICIO app.')
     # app.setWindowIcon(QIcon(':/img/app.ico'))
     splash.showMessage("Cargando programa ...", alignment=Qt.AlignLeft | Qt.AlignBottom)
 
