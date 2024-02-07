@@ -8,19 +8,26 @@
 
 # Ejecución
 
-* Crear resources.py: `\Scripts\pyside6-rcc.exe app\resources.qrc -o app\resources.py`
+* Crear resources.py: `Scripts\pyside6-rcc.exe app\resources.qrc -o app\resources.py`
 * Abrir app: `python app\main.py`
 
-# Deploy
+# Building
 
 1. En carpeta /deploy: `nuitka ..\app\main.py`
 2. Abrir installforge 1.4.2.21, cargar `sql\installer_v14.ifp` y tocar el botón Build.
 
 Ver en sección SQL que en modo --dev también se genera `installer_v14.ifp` con Jinja.
 
-# SQL
+## SQL
 
 Para crear los esquemas de la base de datos según sea producción o dev, se ejecuta `python templates.py` con el flag `--dev` si corresponde. Los archivos *.sql se generan en `\sql`. 
+
+# Deploy
+
+1. Instalar setup.exe
+2. copiar carpeta sql con archivos `caipe_server_schema.sql`, `auto_backup.sql` y `auto_restore.sql`
+3. Configurar `config.ini`
+
 
 ## Base de datos
 
