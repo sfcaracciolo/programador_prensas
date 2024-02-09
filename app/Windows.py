@@ -9,8 +9,10 @@ import resources
 
 class HandlerSql(QWidget):
     sql_error = Signal(object)
+
     def __init__(self) -> None:
         super().__init__()
+        self.setFocus()
 
     def executor(self, query: QSqlQuery, tp_model: QSqlTableModel):
         self.close()
@@ -26,19 +28,29 @@ class HandlerSql(QWidget):
 
         return True
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+
 class AddCommentForm(QWidget):
     update_iop_list_data = Signal()
+
     def __init__(self, backend_fun:str, iop_mapper:QDataWidgetMapper) -> None:
         super().__init__()
         self.iop_mapper = iop_mapper
         self.iop_model = iop_mapper.model().sourceModel()
         self.setWindowModality(Qt.WindowModal.ApplicationModal)
+        self.setFocus()
         self.setup_widgets()
         self.setup_mappers()
         self.setup_ui()
 
         self._query = QSqlQuery()
         self._query.prepare(f'CALL {backend_fun}(:iop_id, :fname, :comment)')
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
 
     def setup_ui(self):
 
@@ -464,6 +476,7 @@ class AddTpForm(HandlerSql):
 
     def __init__(self, tp_model:QSqlTableModel, opc_model:QSqlTableModel, hr_mapper:QDataWidgetMapper, iop_mapper:QDataWidgetMapper, rec_mapper:QDataWidgetMapper):
         super().__init__()
+
         self.setWindowModality(Qt.WindowModal.ApplicationModal)
 
         self.tp_model = tp_model
@@ -687,53 +700,22 @@ class AddTpForm(HandlerSql):
             return
         self.refresh_op_model.emit()
 
-# class EndDatetimeInput(QDialog):
-#     def __init__(self, mapper:QDataWidgetMapper, parent: Optional[QWidget] = None) -> None:
-#         super().__init__(parent)
-#         self.setWindowModality(Qt.WindowModal.ApplicationModal)
-#         self.setWindowTitle("Ingrese fecha de finalización")
-#         self.setMinimumWidth(480)
-
-#         self.w_dt = QDateTimeEdit()
-#         self.w_dt.setCalendarPopup(True)
-
-#         self.mapper = mapper
-
-#         end_dt_col = self.mapper.model().fieldIndex('end_dt')
-#         self.mapper.addMapping(self.w_dt, end_dt_col)
-
-#         form_layout = QFormLayout()
-#         form_layout.addRow("Fecha/Hora", self.w_dt)
-
-#         button_box = QDialogButtonBox(
-#             QDialogButtonBox.Ok,
-#         )
-#         button_box.accepted.connect(self.accept)
-
-#         layout = QVBoxLayout()
-#         layout.addLayout(form_layout)
-#         layout.addWidget(button_box)
-#         self.setLayout(layout)
-
-#     def accept(self) -> None:
-#         model = self.mapper.model()
-#         if not self.mapper.submit():
-#             raise ValueError(model.lastError())
-#         if not model.submitAll():
-#             raise ValueError(model.lastError())
-#         return super().accept()
-
 class RecipeForm(QWidget):
     refresh_rec_proxy_model = Signal()
 
     def __init__(self, rec_model:QSqlTableModel, query: QSqlQuery):
         super().__init__()
         self.setWindowModality(Qt.WindowModal.ApplicationModal)
-
+        self.setFocus()
+        
         self.rec_model = rec_model
         self._query = query
         self.setup_widgets()
         self.setup_ui()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
 
     def setup_widgets(self):
 
@@ -963,6 +945,10 @@ class RecipeEditor(QWidget):
 
         self.setLayout(layout)
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+
     def sortTable(self, section):
         new_section = self.rec_proxy_model.to_source_sorting[section]
         self.table.sortByColumn(new_section, Qt.SortOrder.AscendingOrder)
@@ -1038,7 +1024,11 @@ class GeneralSettings(QWidget):
 
         self.setup_widgets()
         self.setup_ui()
-        
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+
     def setup_widgets(self):
 
         self.w_jornada = QSpinBox()
@@ -1131,7 +1121,11 @@ class BackUpWindow(QWidget):
         self.p = None
         self.setup_widgets()
         self.setup_ui()
-        
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+
     def setup_widgets(self):
 
         self.w_target_dir = QLineEdit()
@@ -1250,7 +1244,11 @@ class RestoreWindow(QWidget):
         self.p = None
         self.setup_widgets()
         self.setup_ui()
-        
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+            
     def setup_widgets(self):
 
         self.w_src_path = QLineEdit()
