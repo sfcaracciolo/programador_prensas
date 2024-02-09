@@ -218,7 +218,7 @@ class TpModel(QSqlTableModel):
 class OpcModel(QAbstractTableModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._data = [ VARIABLES_SIZE * [None] for _ in MAQUINAS]
+        self._data = [ VARIABLES_SIZE * [0] for _ in MAQUINAS]
 
         self._hheader = ('Moldeadas','T. marcha','T. parada')
         # for i, name in enumerate():
