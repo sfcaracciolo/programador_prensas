@@ -25,8 +25,9 @@ Para crear los esquemas de la base de datos según sea producción o dev, se eje
 # Deploy
 
 1. Instalar setup.exe
-2. copiar carpeta sql con archivos `caipe_server_schema.sql`, `auto_backup.sql` y `auto_restore.sql`
-3. Configurar `config.ini`
+2. copiar carpeta sql con archivos `tables_file.txt`, `caipe_server_schema.sql`, `auto_backup.sql` y `auto_restore.sql`
+3. Crear y configurar `config.ini`
+4. Firewall: permitir puertos de entrada a la aplicación para la escritura de receta.
 
 
 ## Base de datos
@@ -55,7 +56,7 @@ Al poner una tarea en marcha se envía la receta correspondiente a la máquina, 
 
 ## Transiciones de estado
 
-| old/new | 0 (restored) | 1 (online) | 2(finished) |
+| old/new | 0 (restored) | 1 (online) | 2 (finished) |
 | --- | --- | --- | --- |
 | 0 (restored) | X | A | + |
 | 1 (online) | B | X | B+ |
