@@ -1,8 +1,5 @@
 # nuitka-project: --standalone
 # nuitka-project: --msvc=14.3
-# nuitka-project: --low-memory
-# nuitka-project: --jobs=1
-# nuitka-project: --lto=no
 # nuitka-project: --enable-plugin=pyside6
 # nuitka-project: --include-qt-plugins=sqldrivers
 # nuitka-project: --windows-icon-from-ico=E:\Repositorios\programador_prensas\app\resources\app.ico
@@ -156,7 +153,6 @@ class OpcClientWorker(QObject):
         self.timer.setSingleShot(False)
         self.timer.timeout.connect(self.check_status)
         self.timer.start()
-
 class OpcServerWorker(QObject):
 
     data_change_fired = Signal(object, object, str)
@@ -205,7 +201,6 @@ class OpcServerWorker(QObject):
 
     def stop(self):
         self.server.stop()
-
 class MainWindow(QMainWindow):
     update_iop_status_color = Signal(object)
     set_machine_online = Signal(str, list, str)
