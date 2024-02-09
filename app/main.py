@@ -7,11 +7,11 @@
 # nuitka-project: --windows-company-name=CAIPE
 # nuitka-project: --windows-product-name=PRODUCCION - ALERGOM
 # nuitka-project: --windows-product-version=0.0.0.2
+# nuitka-project: --windows-disable-console
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-##### nuitka-project: --windows-disable-console
 from asyncio import exceptions
 # import logging
 import sys
@@ -402,7 +402,8 @@ class MainWindow(QMainWindow):
         self.rec_proxy_model = Models.RecProxyModel(self.rec_model)
 
         self.hr_model = Models.HrModel(db=self.db)
-        self.opc_model = Models.OpcModel()
+        self.tp_active_model = Models.TpActiveModel(db=self.db)
+        self.opc_model = Models.OpcModel(self.tp_active_model)
         self.ope_model = Models.SelectorModel('operario', db=self.db)
 
         self.calendar_model = Models.CalendarModel(db=self.db)
@@ -993,7 +994,9 @@ class MainWindow(QMainWindow):
 
         self.tp_model.layoutChanged.emit()
         self.update_iop_status_color.emit(tp_index)
-        
+
+        self.opc_model.update()
+
         if machine[:3] == 'PRE':
             if new_status == 1:
                     recipe_values = self.get_recipe(tp_index)

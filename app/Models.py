@@ -8,6 +8,15 @@ from PySide6.QtSql import *
 from PySide6.QtSql import *
 from Constants import * 
 
+class SelectorModel(QSqlTableModel):
+    def __init__(self, table_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setTable(table_name)
+        self.select()
+
+    def flags(self, index: Union[QModelIndex, QPersistentModelIndex]) -> Qt.ItemFlag:
+        return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
+
 class OpItemProxyModel(QSortFilterProxyModel):
     def __init__(self, parent: Optional[QObject] = None) -> None:
         super().__init__(parent)
@@ -118,6 +127,17 @@ class RecModel(QSqlTableModel):
         self.setTable('receta')
         self.select()
 
+class TpActiveModel(SelectorModel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(table_name = 'active_tp', *args, **kwargs)
+    
+    def is_active(self, machine):
+        start = self.index(0, self.fieldIndex('machine'))
+        ix = self.match(start, Qt.ItemDataRole.DisplayRole, machine, hits=1, flags=Qt.MatchFlag.MatchExactly)[0]
+        tp_id = ix.siblingAtColumn(self.fieldIndex('tp_id')).data(Qt.ItemDataRole.DisplayRole)
+        # print(ix, machine, ix.siblingAtColumn(self.fieldIndex('tp_id')), tp_id)
+        return tp_id > 0
+
 class RecProxyModel(QAbstractProxyModel):
     def __init__(self, model, parent: QObject = None ) -> None:
         super().__init__(parent)
@@ -216,16 +236,11 @@ class TpModel(QSqlTableModel):
         return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
     
 class OpcModel(QAbstractTableModel):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, tp_active_model, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._data = [ VARIABLES_SIZE * [0] for _ in MAQUINAS]
-
         self._hheader = ('Moldeadas','T. marcha','T. parada')
-        # for i, name in enumerate():
-        #     self.setHeaderData(i, Qt.Orientation.Horizontal, name, role=Qt.ItemDataRole.DisplayRole)
-
-        # for i, name in enumerate(MAQUINAS):
-        #     self.setHeaderData(i, Qt.Orientation.Vertical, name, role=Qt.ItemDataRole.DisplayRole)
+        self.tp_active_model = tp_active_model
     
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...) -> Any:
         if role == Qt.ItemDataRole.DisplayRole:
@@ -233,6 +248,7 @@ class OpcModel(QAbstractTableModel):
                 return self._hheader[section]
             if orientation == Qt.Orientation.Vertical:
                 return MAQUINAS[section]
+            
         return super().headerData(section, orientation, role)
 
     def rowCount(self, parent: Union[QModelIndex, QPersistentModelIndex] = ...) -> int:
@@ -255,20 +271,21 @@ class OpcModel(QAbstractTableModel):
         right_ix = self.index(section, VARIABLES_SIZE-1)
         self.dataChanged.emit(left_ix, right_ix)
 
-    # def setData(self, index: Union[QModelIndex, QPersistentModelIndex], value: Any, role: int = ...) -> bool:
-    #     if role == Qt.EditRole:
-    #         row, col = index.row(), index.column()
-    #         self._data[row][col] = value
-    #         self.dataChanged.emit(index, index)
-    #     return super().setData(index, value, role)
-
     def data(self, index: Union[QModelIndex, QPersistentModelIndex], role: int = ...) -> Any:
         row, col = index.row(), index.column()
+        
         if role == Qt.ItemDataRole.DisplayRole:
             return self._data[row][col]
-        # return super().data(index, role)
+        
+        if role in (Qt.ItemDataRole.BackgroundRole, Qt.ItemDataRole.ForegroundRole):
+            if self.tp_active_model.is_active(MAQUINAS[row]):
+                return QBrush(Qt.darkGreen) if role == Qt.ItemDataRole.BackgroundRole else QBrush(Qt.GlobalColor.white)
         return None
     
+    def update(self):
+        self.tp_active_model.select()
+        self.layoutChanged.emit()
+
 class CalendarModel(QSqlQueryModel):
     def __init__(self, db, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -548,12 +565,3 @@ class HrModel(QSqlTableModel):
 
     def flags(self, index: Union[QModelIndex, QPersistentModelIndex]) -> Qt.ItemFlag:
         return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
-
-class SelectorModel(QSqlTableModel):
-    def __init__(self, table_name, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setTable(table_name)
-        self.select()
-
-    def flags(self, index: Union[QModelIndex, QPersistentModelIndex]) -> Qt.ItemFlag:
-        return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
