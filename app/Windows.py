@@ -724,7 +724,7 @@ class AddTpForm(HandlerSql):
 #         return super().accept()
 
 class RecipeForm(QWidget):
-    # refresh_rec_model = Signal()
+    refresh_rec_proxy_model = Signal()
 
     def __init__(self, rec_model:QSqlTableModel, query: QSqlQuery):
         super().__init__()
@@ -732,10 +732,8 @@ class RecipeForm(QWidget):
 
         self.rec_model = rec_model
         self._query = query
-
         self.setup_widgets()
         self.setup_ui()
-
 
     def setup_widgets(self):
 
@@ -862,10 +860,11 @@ class RecipeForm(QWidget):
             return False
 
         self.rec_model.layoutChanged.emit()
+        self.refresh_rec_proxy_model.emit()
         self.close()
 
-class NewRecipeForm(RecipeForm):
 
+class NewRecipeForm(RecipeForm):
     def __init__(self, rec_model:QSqlTableModel):
 
         query = QSqlQuery()
@@ -941,7 +940,8 @@ class RecipeEditor(QWidget):
         self.new_recipe_form_window = NewRecipeForm(
             self.rec_model
         )
-
+        self.new_recipe_form_window.refresh_rec_proxy_model.connect(self.rec_proxy_model.layoutChanged.emit)
+        
         self.edit_recipe_form_window = EditRecipeForm(
             self.rec_mapper
         )
@@ -955,6 +955,7 @@ class RecipeEditor(QWidget):
         delete_button.clicked.connect(self.delete)
         edit_button.clicked.connect(self.edit)
         create_button.clicked.connect(self.new_recipe_form_window.show)
+
 
         layout = QVBoxLayout()
         layout.addWidget(self.table)
@@ -1027,6 +1028,7 @@ class RecipeEditor(QWidget):
                 return False
 
             self.rec_model.layoutChanged.emit()
+            self.rec_proxy_model.layoutChanged.emit()
         
 class GeneralSettings(QWidget):
 
