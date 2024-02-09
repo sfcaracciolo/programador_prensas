@@ -6,7 +6,6 @@
 # nuitka-project: --enable-plugin=pyside6
 # nuitka-project: --include-qt-plugins=sqldrivers
 # nuitka-project: --windows-icon-from-ico=E:\Repositorios\programador_prensas\app\resources\app.ico
-# nuitka-project: --windows-disable-console
 # nuitka-project: --windows-uac-admin
 # nuitka-project: --windows-company-name=CAIPE
 # nuitka-project: --windows-product-name=PRODUCCION - ALERGOM
@@ -15,6 +14,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+##### nuitka-project: --windows-disable-console
 from asyncio import exceptions
 # import logging
 import sys
@@ -978,14 +978,15 @@ class MainWindow(QMainWindow):
         status = tp_index.siblingAtColumn(self.tp_model.fieldIndex('status')).data(Qt.ItemDataRole.DisplayRole)
         print(f'{tp_id}: {status} -> {new_status}')
         machine = tp_index.siblingAtColumn(self.tp_model.fieldIndex('machine')).data(Qt.ItemDataRole.DisplayRole)
-        self.opc_model.set_vars(machine, Constants.VARIABLES_SIZE*[None])
-
+        
         cycles, ton, toff = self.opc_model.get_vars(machine)
         self.set_status_query.bindValue(':tp_id', tp_id)
         self.set_status_query.bindValue(':status', new_status)
         self.set_status_query.bindValue(':cycles', cycles)
         self.set_status_query.bindValue(':ton', ton)
         self.set_status_query.bindValue(':toff', toff)
+
+        self.opc_model.set_vars(machine, Constants.VARIABLES_SIZE*[0])
 
         if not self.set_status_query.exec():
             self.sql_error(self.set_status_query.lastError())
@@ -1109,7 +1110,7 @@ class MainWindow(QMainWindow):
             return
 
         machine = self.opc_server_worker.server.get_node(nodeid.nodeid).read_display_name().Text
-        # print('local server', machine, values)
+        print(f'local server {machine} {values}')
 
         self.update_recipe_query.bindValue(':machine', machine)
         for k, v in zip(Constants.RECETA, values):
@@ -1122,6 +1123,8 @@ class MainWindow(QMainWindow):
         if not self.rec_model.select():
             self.sql_error(self.rec_model.lastError())
             return
+        
+        self.rec_proxy_model.layoutChanged.emit()
         
     def subscription_remote_server_nodes_callback(self, node:sync.SyncNode, values, timestamp):
         machine = node.read_display_name().Text
