@@ -14,7 +14,7 @@ environment = Environment(loader=FileSystemLoader("sql/"))
 # ALERGOM SERVER
 template = environment.get_template("alergom_server_schema.jinja")
 content = template.render(
-    DBF_PATH='E:/Repositorios/programador_prensas/dbfs/' if DEV else 'D:/USUARIOS/CALIDAD/CAIPE/',
+    DBF_PATH='E:/Repositorios/programador_prensas/dbfs/' if DEV else 'D:/USUARIOS/CALIDAD/MS/',
 )
 with open('sql/alergom_server_schema.sql', mode="w", encoding="utf-8") as f:
     f.write(content)
@@ -40,7 +40,7 @@ with open('sql/import_old_recipes.sql', mode="w", encoding="utf-8") as f:
 if DEV:
     template = environment.get_template("installer_v14.jinja")
     content = template.render(
-        VERSION='0.0.0.2',
+        VERSION='0.0.0.3',
         DEPLOY_PATH='E:\Repositorios\programador_prensas\deploy',
         INSTALLFORGE_PATH='C:\Program Files (x86)\solicus\InstallForge',
         SERIAL=serial_generator()
