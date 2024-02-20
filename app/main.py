@@ -6,7 +6,7 @@
 # nuitka-project: --windows-uac-admin
 # nuitka-project: --windows-company-name=CAIPE
 # nuitka-project: --windows-product-name=PRODUCCION - ALERGOM
-# nuitka-project: --windows-product-version=0.0.0.2
+# nuitka-project: --windows-product-version=0.0.0.3
 # nuitka-project: --windows-disable-console
 
 #!/usr/bin/env python
