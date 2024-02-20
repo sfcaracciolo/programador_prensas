@@ -60,8 +60,8 @@ class OpItemModel(QSqlTableModel):
         self.op_model = op_model
         self.setEditStrategy(QSqlTableModel.EditStrategy.OnManualSubmit)
         self.setTable('orden_produccion_item')
-        self.cols =  [0, 1, 3, 4, 5, 6, 7, 8, 11]
-        self.names = ['ID', 'OP', 'Emisión', 'Fórmula', 'Cliente', 'O/C', 'HR', 'Cantidad', 'Entrega' ]
+        self.cols =  [0, 1, 3, 4, 5, 6, 7, 8, 11, 29]
+        self.names = ['ID', 'OP', 'Emisión', 'Fórmula', 'Cliente', 'O/C', 'HR', 'Cantidad', 'Entrega', 'Máquinas']
         orients = len(self.cols) * [ Qt.Orientation.Horizontal ]
         list(map(self.setHeaderData, self.cols, orients, self.names))
         
