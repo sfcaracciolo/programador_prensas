@@ -15,3 +15,5 @@ credentials.txt
 sql/installer_v14.ifp
 hmi/
 deploy/setup.exe
+sql/alergom_server_schema.sql
+sql/caipe_server_schema.sql
