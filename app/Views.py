@@ -92,6 +92,8 @@ class CalendarWidget(QTableView):
         self.v_header.setSectionResizeMode(QHeaderView.ResizeMode.Fixed)
         self.v_header.setDefaultSectionSize(90)
 
+        self.setStyleSheet("selection-background-color: red;")
+
     def selectionChanged(self, selected: QItemSelection, deselected: QItemSelection) -> None:
         self.clearFocus() # estas dos lineas son para solucionar el bug de la seleccion de la celdas.
         self.setFocus()
