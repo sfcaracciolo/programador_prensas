@@ -125,6 +125,7 @@ class OpeAssigTpForm(HandlerSql):
     def __init__(self, backend_fun:str, ope_model: QSqlTableModel, tp_mapper:QDataWidgetMapper):
         super().__init__()
         self.setWindowModality(Qt.WindowModal.ApplicationModal)
+        self.setFocus()
 
         self.tp_mapper = tp_mapper
         self.tp_model = tp_mapper.model()
@@ -844,7 +845,6 @@ class RecipeForm(QWidget):
         self.rec_model.layoutChanged.emit()
         self.refresh_rec_proxy_model.emit()
         self.close()
-
 
 class NewRecipeForm(RecipeForm):
     def __init__(self, rec_model:QSqlTableModel):
