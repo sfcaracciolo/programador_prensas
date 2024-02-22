@@ -404,12 +404,13 @@ class MainWindow(QMainWindow):
         self.hr_model = Models.HrModel(db=self.db)
         self.tp_active_model = Models.TpActiveModel(db=self.db)
         self.opc_model = Models.OpcModel(self.tp_active_model)
-        self.ope_model = Models.SelectorModel('operario', db=self.db)
+        self.ope_model = Models.OpeModel(db=self.db)
 
         self.calendar_model = Models.CalendarModel(db=self.db)
         self.calendar_proxy_model = Models.CalendarProxyModel(
             self.tp_model,
-            self.opc_model
+            self.opc_model,
+            self.ope_model
         )
         self.calendar_proxy_model.setSourceModel(self.calendar_model)
 

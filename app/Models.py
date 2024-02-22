@@ -127,6 +127,17 @@ class RecModel(QSqlTableModel):
         self.setTable('receta')
         self.select()
 
+
+class OpeModel(SelectorModel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(table_name = 'operario', *args, **kwargs)
+
+    def data(self, index: Union[QModelIndex, QPersistentModelIndex], role: int = ...) -> Any:
+        
+        if role == Qt.ItemDataRole.DecorationRole:
+            return QColor(COLORES[index.row() % len(COLORES)])
+        
+        return super().data(index, role)
 class TpActiveModel(SelectorModel):
     def __init__(self, *args, **kwargs):
         super().__init__(table_name = 'active_tp', *args, **kwargs)
@@ -363,12 +374,11 @@ class CalendarModel(QSqlQueryModel):
 class CalendarProxyModel(QAbstractProxyModel):
     span_signal = Signal(int, int, int)
 
-    def __init__(self, tp_model:QSqlTableModel, opc_model:OpcModel, parent: Optional[QObject] = None) -> None:
+    def __init__(self, tp_model:QSqlTableModel, opc_model:OpcModel, ope_model:OpeModel, parent: Optional[QObject] = None) -> None:
         super().__init__(parent)
         self.tp_model = tp_model
+        self.ope_model = ope_model
         self.opc_model = opc_model
-        self.color_assignmet = {}
-        self.ope_colors = itertools.cycle(COLORES)
         self.mac_colors = itertools.cycle(COLORES)
         self.actual_color = None
 
@@ -410,7 +420,6 @@ class CalendarProxyModel(QAbstractProxyModel):
 
 
         return super().headerData(section, orientation, role)
-
 
     def rowCount(self, parent: Union[QModelIndex, QPersistentModelIndex] = ...) -> int:
         source_model = self.sourceModel()
@@ -512,12 +521,10 @@ class CalendarProxyModel(QAbstractProxyModel):
 
         if role == Qt.ItemDataRole.BackgroundRole:
             if ope != '' and status != 2:
-                try:
-                    color_name = self.color_assignmet[ope]
-                except KeyError:
-                    color_name = next(self.ope_colors)
-                    self.color_assignmet[ope] = color_name
-                return QBrush(color_name)
+
+                start = self.ope_model.index(0, self.ope_model.fieldIndex('CM70_03'))
+                ope_index = self.ope_model.match(start, Qt.ItemDataRole.DisplayRole, ope, hits=1, flags=Qt.MatchFlag.MatchExactly)
+                return QBrush(COLORES[ope_index[0].row() % len(COLORES)]) if len(ope_index) > 0 else QBrush(Qt.GlobalColor.gray)
             return QBrush(Qt.GlobalColor.white)
 
         if role == Qt.ItemDataRole.ToolTipRole:
