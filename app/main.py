@@ -802,6 +802,11 @@ class MainWindow(QMainWindow):
         else:
             self.add_group_comment_form_window.show()
     
+    def refresh_ope_model(self):
+        if not self.ope_model.select():
+            self.sql_error(self.ope_model.lastError())
+            return
+        
     def refresh_op_model(self):
         if not self.op_model.select():
             self.sql_error(self.op_model.lastError())
@@ -842,42 +847,6 @@ class MainWindow(QMainWindow):
         self.backward_date_form_window.machine = self.calendar_proxy_model.get_machine_of_row(calendar_index)
         self.backward_date_form_window.date = self.calendar_proxy_model.get_date(calendar_index)
         self.backward_date_form_window.show()
-
-    # def open_op_info(self):
-    #     try:
-    #         index = self.iop_panel.table.selectedIndexes()[0]
-    #     except IndexError:
-    #         QMessageBox(
-    #             QMessageBox.Warning,
-    #             'Selección vacía',
-    #             'Debe seleccionar una fila ejecutar el comando.',
-    #             QMessageBox.StandardButton.Ok,
-    #             parent=self
-    #         ).exec()
-    #     else:
-    #         iop_id = index.siblingAtColumn(0).data()
-    #         start = self.view_models.opinfo.index(0,0)
-    #         model_row = self.view_models.opinfo.match(start, Qt.ItemDataRole.DisplayRole, iop_id, hits=1)[0].row()
-    #         self.opinfo_mapper.setCurrentIndex(model_row)
-    #         self.op_info_window.show()
-
-    # def open_op_lotes(self):
-    #     try:
-    #         index = self.iop_panel.table.selectedIndexes()[0]
-    #     except IndexError:
-    #         QMessageBox(
-    #             QMessageBox.Warning,
-    #             'Selección vacía',
-    #             'Debe seleccionar una fila ejecutar el comando.',
-    #             QMessageBox.StandardButton.Ok,
-    #             parent=self
-    #         ).exec()
-    #     else:
-    #         iop_id = index.siblingAtColumn(0).data()
-    #         start = self.iop_model.index(0,0)
-    #         model_row = self.iop_model.match(start, Qt.ItemDataRole.DisplayRole, iop_id, hits=1)[0].row()
-    #         self.oplotes_mapper.setCurrentIndex(model_row)
-    #         self.op_lotes_window.show()
 
     def calendar_selection(self):
         try:
@@ -1067,12 +1036,16 @@ class MainWindow(QMainWindow):
         self.tp_model.layoutChanged.emit()
 
     def ope_assignment_form(self):
+        self.refresh_ope_model()
+        
         source_index = self.calendar_tp_selection()
         if source_index is None:
             return
         self.ope_assignment_form_window.show()
 
     def ope_group_assignment_form(self):
+        self.refresh_ope_model()
+        
         source_index = self.calendar_tp_selection()
         if source_index is None:
             return
