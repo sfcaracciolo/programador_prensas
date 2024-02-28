@@ -7,7 +7,7 @@
 # nuitka-project: --windows-company-name=CAIPE
 # nuitka-project: --windows-product-name=PRODUCCION - ALERGOM
 # nuitka-project: --windows-product-version=0.0.0.3
-## nuitka-project: --windows-disable-console
+# nuitka-project: --windows-disable-console
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -454,6 +454,7 @@ class MainWindow(QMainWindow):
         self.opc_table.setModel(self.opc_model)
         self.opc_table.resizeColumnsToContents()
 
+        # self.setStyleSheet("QTableView::item:focus { background-color: transparent; color:red;  border: 2px solid red; }")
         self.calendar_table = Views.CalendarWidget()
         self.calendar_table.setModel(self.calendar_proxy_model)
 
@@ -1074,7 +1075,11 @@ class MainWindow(QMainWindow):
         pass
 
     def get_recipe(self, tp_index: QModelIndex):
-        hr = tp_index.siblingAtColumn(self.tp_model.fieldIndex('hr')).data()[:9] # remove letter if exist: NNNNN/NNL
+        hr = tp_index.siblingAtColumn(self.tp_model.fieldIndex('hr')).data()
+        print(f'HR = {hr}')
+        if len(hr) > 8:
+            hr = hr[:8] # remove letter if exist: NNNNN/NNL
+            print(f'Converted to HR = {hr}')
         start = self.rec_model.index(0,self.rec_model.fieldIndex('hr'))
         try:
             rec_index = self.rec_model.match(start, Qt.ItemDataRole.DisplayRole, hr, hits=1)[0]
