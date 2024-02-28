@@ -7,7 +7,7 @@
 # nuitka-project: --windows-company-name=CAIPE
 # nuitka-project: --windows-product-name=PRODUCCION - ALERGOM
 # nuitka-project: --windows-product-version=0.0.0.3
-# nuitka-project: --windows-disable-console
+## nuitka-project: --windows-disable-console
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -102,6 +102,7 @@ class OpcClientWorker(QObject):
     def write_values(self, nodes, values):
         try:
             codes = self.uaclient.client.write_values(nodes, values)
+            print(codes)
         except Exception as exc:
             print(exc)
             return self.com_error.emit(exc)
@@ -1066,7 +1067,7 @@ class MainWindow(QMainWindow):
         pass
 
     def get_recipe(self, tp_index: QModelIndex):
-        hr = tp_index.siblingAtColumn(self.tp_model.fieldIndex('hr')).data()
+        hr = tp_index.siblingAtColumn(self.tp_model.fieldIndex('hr')).data()[:9] # remove letter if exist: NNNNN/NNL
         start = self.rec_model.index(0,self.rec_model.fieldIndex('hr'))
         try:
             rec_index = self.rec_model.match(start, Qt.ItemDataRole.DisplayRole, hr, hits=1)[0]
