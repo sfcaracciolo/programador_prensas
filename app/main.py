@@ -708,6 +708,8 @@ class MainWindow(QMainWindow):
             self.iop_panel.table.resizeColumnsToContents()
             # self.setEnabled(True)
             self.iop_panel.table.sort()
+            
+            self.refresh_hr_model()
 
     @Slot(dict)
     def server_status_changed(self, data):
@@ -807,6 +809,11 @@ class MainWindow(QMainWindow):
     def refresh_ope_model(self):
         if not self.ope_model.select():
             self.sql_error(self.ope_model.lastError())
+            return
+        
+    def refresh_hr_model(self):
+        if not self.hr_model.select():
+            self.sql_error(self.hr_model.lastError())
             return
         
     def refresh_op_model(self):
