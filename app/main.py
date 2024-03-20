@@ -40,7 +40,7 @@ locale.setlocale(locale.LC_ALL, "es_AR") #
 
 class OpcClientWorker(QObject):
 
-    server_status = Signal(dict)
+    is_connected = Signal(bool)
     com_error = Signal(object)
     data_change_fired = Signal(object, object, str)
 
@@ -56,8 +56,8 @@ class OpcClientWorker(QObject):
             dato = datetime.now().isoformat()
         self.data_change_fired.emit(node, val, dato)
 
-    def make_subscriptions(self):
-        nodes = self.uaclient.client.nodes.root.get_child(
+    def get_nodes(self):
+        return self.uaclient.client.nodes.root.get_child(
             [
                 "0:Objects",
                 "2:MODBUS RTU",
@@ -65,13 +65,14 @@ class OpcClientWorker(QObject):
                 "2:Variables"
             ]
         ).get_children()
-        for node in nodes:
-            try:
-                self.uaclient.subscribe_datachange(node, self)
-            except Exception as exc:
-                raise ValueError(exc)
-        self._subscribed_nodes.append(nodes)
-        return True
+
+    def make_subscriptions(self):
+        for node in self.get_nodes():
+            self.uaclient.subscribe_datachange(node, self)
+
+    def clean_subscriptions(self):
+        for node in self.get_nodes():
+            self.uaclient.unsubscribe_datachange(node, self)
 
     @Slot(str)
     def set_machine_offline(self, machine):
@@ -106,32 +107,37 @@ class OpcClientWorker(QObject):
         except Exception as exc:
             print(exc)
             return self.com_error.emit(exc)
-        
-    def check_status(self):
-        if not self.uaclient._connected:
-            self.server_data['is_connected'] = False
-            self.server_data['msg'] = f'Connecting to server ({self.retries})'
-            self.server_status.emit(self.server_data)
-            try:
-                self.uaclient.connect(self.uri)
-            except exceptions.TimeoutError:
-                self.retries += 1
-            else:
-                if not self.make_subscriptions():
-                    self.uaclient.disconnect()
-                    self.retries += 1
-                else:
-                    self.retries = 0
-                    self.server_data['is_connected'] = True
-                    self.server_data['msg'] = f'Connected to server'
-                    self.server_status.emit(self.server_data)
+    
+    def connect_client(self):
+        try:
+            self.uaclient.connect(self.uri)
+        except exceptions.TimeoutError:
+            # print('Timeout ...')
+            self.is_connected.emit(False)
+        except ConnectionRefusedError:
+            self.is_connected.emit(False)
         else:
-            node = self.uaclient.get_node('i=2256') #server status var
-            try:
-                node.read_value()
-            except ConnectionError as exc:
-                self.uaclient.disconnect()
-                self._subscribed_nodes = []
+            self.make_subscriptions()
+
+
+    @Slot()
+    def check_status(self):
+        if self.uaclient.client is None:
+            self.connect_client()
+            return
+
+        if not self.uaclient._connected:
+            self.connect_client()
+            return
+
+        try:
+            self.uaclient.client.check_connection()
+        except Exception as exc:
+            print(exc)
+            self.uaclient.disconnect()
+            self.is_connected.emit(False)
+        else:
+            self.is_connected.emit(True)
 
     def stop(self):
         self.timer.stop()
@@ -142,15 +148,14 @@ class OpcClientWorker(QObject):
         # Store constructor arguments (re-used for processing)
         self.uaclient = UaClient()
         self._subscribed_nodes = []
-        self.server_data = {}
 
         ip = Constants.settings.value('HMI/OPC/ip', defaultValue="localhost")
         port = Constants.settings.value('HMI/OPC/port', defaultValue='4840')
         self.uri = f'opc.tcp://{ip}:{port}/hmi/'
-        self.retries = 0 
+
 
         self.timer = QTimer()
-        self.timer.setInterval(1000)
+        self.timer.setInterval(5000)
         self.timer.setSingleShot(False)
         self.timer.timeout.connect(self.check_status)
         self.timer.start()
@@ -236,7 +241,7 @@ class MainWindow(QMainWindow):
         self.opc_client_thread.finished.connect(self.opc_client_worker.stop)
 
         self.opc_client_worker.data_change_fired.connect(self.subscription_remote_server_nodes_callback)
-        self.opc_client_worker.server_status.connect(self.server_status_changed)
+        self.opc_client_worker.is_connected.connect(self.server_status_changed)
         self.opc_client_worker.com_error.connect(self.opc_error)
         self.set_machine_online.connect(self.opc_client_worker.set_machine_online)
         self.set_machine_offline.connect(self.opc_client_worker.set_machine_offline)
@@ -712,11 +717,11 @@ class MainWindow(QMainWindow):
             
             self.refresh_hr_model()
 
-    @Slot(dict)
-    def server_status_changed(self, data):
+    @Slot(bool)
+    def server_status_changed(self, status):
         # uncomment in production
         # self.setEnabled(data['is_connected'])
-        self.status_bar.showMessage(data['msg'])
+        self.status_bar.showMessage('HMI online' if status else 'HMI offline')
         
     def add_tp_form(self):
         try:
