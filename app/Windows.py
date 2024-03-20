@@ -1063,9 +1063,9 @@ class GeneralSettings(QWidget):
         form_layout = QFormLayout()
 
         form_layout.addRow('Jornada laboral [hs]', self.w_jornada)
-        form_layout.addRow('IP del cliente OPC', self.w_opc_client_ip)
-        form_layout.addRow('Puerto del cliente OPC', self.w_opc_client_port)
-        form_layout.addRow('Puerto del servidor OPC', self.w_opc_server_port)
+        form_layout.addRow('IP OPC server (remoto)', self.w_opc_client_ip)
+        form_layout.addRow('Puerto OPC server (remoto)', self.w_opc_client_port)
+        form_layout.addRow('Puerto OPC server (local)', self.w_opc_server_port)
         form_layout.addRow('Puerto de la base de datos', self.w_db_port)
         form_layout.addRow('Nombre de la base de datos', self.w_database)
 
