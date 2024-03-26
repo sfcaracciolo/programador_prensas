@@ -1,3 +1,24 @@
+# Funcionamiento
+
+Las tareas programadas se visualizan en el calendario, muestran la hoja de ruta, las moldeadas actuales de la tarea (tiempo real) / moldeades acumuladas de la tarea (acumula moldeadas si han detenido y arrancado la máquina), y las moldeadas actuales totales (suma de todos las moldeadas asociadas a la misma orden de producción) / moldeadas requeridas por la orden de producción.
+
+Al poner una tarea en marcha se envía la receta correspondiente a la máquina, se resetean los contadores (moldeadas, t. marcha, t. parada) y se escribe un 1 en el estado de máquina. Cuando se detiene o finaliza una tarea que se encuentra online, se escribe un 0 en el estado de máquina.
+
+## Ventana ppal
+
+<img src="screenshots/mainwindow.png" alt="drawing" width=""/>
+
+## Transiciones de estado
+
+| old/new | 0 (restored) | 1 (online) | 2 (finished) |
+| --- | --- | --- | --- |
+| 0 (restored) | X | A | + |
+| 1 (online) | B | X | B+ |
+| 2 (finished) | - | A- | X |
+
+**X**: sin acción. **A**: Si máquina online -> checkout de la TP activa. Luego, activar TP nueva. **B**: Checkout de la TP activa. Luego, desactivar TP. **+/-**: Incrementar/Decrementar hijos finalizados. Checkout es la operación que incrementa los acumulados de las tareas programadas.
+
+
 # Requisitos
 
 * Instalar pyside6, asyncua, nuitka
@@ -47,23 +68,3 @@ Se desarrollaron dos scripts de Powershell que deben ser ejecutados en `\sql`:
   2. `auto_restore.ps1`: restaura el backup indicado con el siguiente comando -> `.\auto_restore.ps1 -src_path "E:\backup_test\20230304224737\caipe_server"`
 
 <!-- https://mariadb.com/kb/en/partial-backup-and-restore-with-mariabackup/ -->
-
-# Funcionamiento
-
-Las tareas programadas se visualizan en el calendario, muestran la hoja de ruta, las moldeadas actuales de la tarea (tiempo real) / moldeades acumuladas de la tarea (acumula moldeadas si han detenido y arrancado la máquina), y las moldeadas actuales totales (suma de todos las moldeadas asociadas a la misma orden de producción) / moldeadas requeridas por la orden de producción.
-
-Al poner una tarea en marcha se envía la receta correspondiente a la máquina, se resetean los contadores (moldeadas, t. marcha, t. parada) y se escribe un 1 en el estado de máquina. Cuando se detiene o finaliza una tarea que se encuentra online, se escribe un 0 en el estado de máquina.
-
-## Transiciones de estado
-
-| old/new | 0 (restored) | 1 (online) | 2 (finished) |
-| --- | --- | --- | --- |
-| 0 (restored) | X | A | + |
-| 1 (online) | B | X | B+ |
-| 2 (finished) | - | A- | X |
-
-**X**: sin acción. **A**: Si máquina online -> checkout de la TP activa. Luego, activar TP nueva. **B**: Checkout de la TP activa. Luego, desactivar TP. **+/-**: Incrementar/Decrementar hijos finalizados. Checkout es la operación que incrementa los acumulados de las tareas programadas.
-
-## Ventana ppal
-
-<img src="screenshots/mainwindow.png" alt="drawing" width=""/>
