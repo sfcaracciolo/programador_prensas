@@ -431,7 +431,7 @@ BEGIN
     rec.SPARRMIN = SPARRMIN,
     rec.LIBRE1 = LIBRE1,
     rec.LIBRE2 = LIBRE2
-    WHERE rec.hr = hr;
+    WHERE rec.hr = SUBSTRING(hr FROM 1 FOR 8);
 
 END; //
 
